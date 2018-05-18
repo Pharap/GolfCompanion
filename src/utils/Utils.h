@@ -66,40 +66,28 @@ enum class GameState : uint8_t {
 
 };
 
-struct Hole {
+struct Hole
+{
+	uint8_t par = 0;  
+	uint8_t playerScore[4] ={};
+	
+	Hole(void) = default;
+	
+	Hole(uint8_t par)
+		: par(par)
+	{
+	}
 
-  uint8_t par = 4;  
-  uint8_t player1Score;
-  uint8_t player2Score;
-  uint8_t player3Score;
-  uint8_t player4Score;
+	uint8_t getPlayerScore(uint8_t index) const
+	{
+		return (index < 4) ? this->playerScore[index] : 0;
+	}
 
-  uint8_t getPlayerScore(uint8_t index) {
-
-    switch (index) {
-
-      case 1: return player1Score;
-      case 2: return player2Score;
-      case 3: return player3Score;
-      case 4: return player4Score;
-      default: return 0;
-    }
-
-  }
-
-  void setPlayerScore(uint8_t index, uint8_t val) {
-
-    switch (index) {
-
-      case 1: player1Score = val; break;
-      case 2: player2Score = val; break;
-      case 3: player3Score = val; break;
-      case 4: player4Score = val; break;
-
-    }
-
-  }
-
+	void setPlayerScore(uint8_t index, uint8_t value)
+	{
+		if(index < 4)
+			this->playerScore[index] = value;
+	}
 };
 
 enum class CursorMode : uint8_t {
