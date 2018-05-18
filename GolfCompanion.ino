@@ -42,13 +42,18 @@ void setup() {
 // ----------------------------------------------------------------------------
 //  Space pad a number of x digits .. 
 //
-void printPaddedNumber(uint8_t val, uint8_t digits) {
-
-  if (digits >= 4 && val < 1000)  font4x6.print(" ");
-  if (digits >= 3 && val < 100)   font4x6.print(" ");
-  if (digits >= 2 && val < 10)    font4x6.print(" ");
+void printPaddedNumber(uint8_t val, uint8_t digits)
+{
+  if (digits >= 4 && val < 1000)
+	font4x6.print(' ');
+	
+  if (digits >= 3 && val < 100)
+	font4x6.print(' ');
+	
+  if (digits >= 2 && val < 10)
+	font4x6.print(' ');
+	
   font4x6.print(val);
-
 }
 
 
@@ -115,8 +120,7 @@ bool fadeOut()
   // If fade isn't complete, increase the counter
   if(fadeWidth < WIDTH) 
   {
-    ++fadeWidth;
-    ++fadeWidth;
+    fadeWidth += 2;
     return false;
   }
   else 
@@ -151,7 +155,7 @@ void numberPlayers()
   drawHeader();
   drawPopWindow();
   font4x6.setCursor(6, 29);
-  font4x6.print("How many players? ");
+  font4x6.print(F("How many players? "));
   font4x6.println(game.numberOfPlayers);
 
   if (flashCursor()) { arduboy.drawLine(96, 37, 99, 37); }
@@ -304,7 +308,7 @@ void numberHoles()
   drawHeader();
   drawPopWindow();
   font4x6.setCursor(6, 29);
-  font4x6.print("How many Holes? ");
+  font4x6.print(F("How many Holes? "));
   font4x6.println(game.numberOfHoles);
 
   if (flashCursor()) { arduboy.drawLine(86, 37, (game.numberOfHoles < 10 ? 89 : 94), 37); }
@@ -785,7 +789,7 @@ void finalScoreDisplay()
 
 	font4x6.setTextColor(BLACK);
 	font4x6.setCursor(2,0);
-	font4x6.print("Par~for~this~course~is ");
+	font4x6.print(F("Par~for~this~course~is "));
 	font4x6.print(game.total.par);
 	font4x6.setTextColor(WHITE);
 	font4x6.setCursor(18,7);
@@ -798,7 +802,7 @@ void finalScoreDisplay()
 	font4x6.setCursor(66,26);
 	printPaddedNumber(scorePlayer1, 3);
 	font4x6.setCursor(97,26);
-	font4x6.print(parPlayer1 >= 0 ? " ": "-");
+	font4x6.print(parPlayer1 >= 0 ? ' ' : '-');
 	printPaddedNumber(absT(parPlayer1), 2);
 
 	if (game.numberOfPlayers >= 2) 
@@ -811,7 +815,7 @@ void finalScoreDisplay()
 		font4x6.setCursor(66,35);
 		printPaddedNumber(scorePlayer2, 3);
 		font4x6.setCursor(97,35);
-		font4x6.print(parPlayer2 >= 0 ? " ": "-");
+		font4x6.print(parPlayer2 >= 0 ? ' ' : '-');
 		printPaddedNumber(absT(parPlayer2), 2);
 	}
 
@@ -825,7 +829,7 @@ void finalScoreDisplay()
 		font4x6.setCursor(66,44);
 		printPaddedNumber(scorePlayer3, 3);
 		font4x6.setCursor(97,44);
-		font4x6.print(parPlayer3 >= 0 ? " ": "-");
+		font4x6.print(parPlayer3 >= 0 ? ' ' : '-');
 		printPaddedNumber(absT(parPlayer3), 2);
 	}
 
@@ -839,7 +843,7 @@ void finalScoreDisplay()
 		font4x6.setCursor(66,53);
 		printPaddedNumber(scorePlayer4, 3);
 		font4x6.setCursor(97,53);
-		font4x6.print(parPlayer4 >= 0 ? " ": "-");
+		font4x6.print(parPlayer4 >= 0 ? ' ' : '-');
 		printPaddedNumber(absT(parPlayer4), 2);
 	}
 
