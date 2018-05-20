@@ -253,23 +253,11 @@ void playerNames()
 	if (arduboy.justPressed(A_BUTTON))				
 	{		
 		// name.save(EEPROM_PLAYER_NAMES + ((game.playerBeingEdited - 1) * (NAME_LENGTH + 1)));
-		switch (game.playerBeingEdited)
-		{
-			case 1:
-				strcpy(game.name1 , name.getString());
-				break;
-
-			case 2:
-				strcpy(game.name2 , name.getString());
-				break;
-
-			case 3:
-				strcpy(game.name3 , name.getString());
-				break;
-
-			case 4:
-				strcpy(game.name4 , name.getString());
-				break;
+		
+		if(game.playerBeingEdited >= 1 && game.playerBeingEdited <= 4)
+		{		
+			const uint8_t index = game.playerBeingEdited - 1;
+			strcpy((&game.names[index][0]), name.getString());
 		}
 
 		if (game.playerBeingEdited < game.numberOfPlayers) 
@@ -362,75 +350,60 @@ void scrollingBackground()
 
 void loop()
 {
+	if (!arduboy.nextFrame()) return;
 
-  if (!arduboy.nextFrame()) return;
+	arduboy.clear();
+	arduboy.pollButtons();
+	arduboy.clear();
 
-  arduboy.clear();
-  arduboy.pollButtons();
-  arduboy.clear();
+	switch (game.getState())
+	{
+		case GameState::VSBoot:
+			vsBoot();
+			break;
 
-  switch (game.getState())
-  {
-    case GameState::VSBoot:
-      vsBoot();
-      break;
+		case GameState::SplashScreen:
+			splashScreen();
+			break;
 
-    case GameState::SplashScreen:
-      splashScreen();
-      break;
+		case GameState::CreditScreen:
+			creditScreen();
+			break;
 
-    case GameState::CreditScreen:
-      creditScreen();
-      break;
+		case GameState::NumberOfPlayers:
+			numberPlayers();
+			break;
 
-    case GameState::NumberOfPlayers:
-      numberPlayers();
-      break;
+		case GameState::PlayerNames_Init:    
+			game.setState(GameState::PlayerNames);
 
-    case GameState::PlayerNames_Init:    
-      game.setState(GameState::PlayerNames);
+			if(game.playerBeingEdited >= 1 && game.playerBeingEdited <= 4)
+			{		
+				const uint8_t index = game.playerBeingEdited - 1;
+				name.setChars((&game.names[index][0]));
+			}
 
-      switch (game.playerBeingEdited)
-      {
-        case 1:
-          name.setChars(game.name1);
-          break;
+		case GameState::PlayerNames:
+			playerNames();
+			break;
 
-        case 2:
-          name.setChars(game.name2);
-          break;
+		case GameState::NumberOfHoles:
+			numberHoles();
+			break;
 
-        case 3:
-          name.setChars(game.name3);
-          break;
+		case GameState::InGame_Init:
+			game.setState(GameState::InGame);
 
-        case 4:
-          name.setChars(game.name4);
-          break;
-      }
+		case GameState::InGame:
+			inGame();
+			break;
 
-    case GameState::PlayerNames:
-      playerNames();
-      break;
+		case GameState::FinalScore:
+			finalScoreDisplay();
+			break;
+	} 
 
-    case GameState::NumberOfHoles:
-      numberHoles();
-      break;
-
-    case GameState::InGame_Init:
-      game.setState(GameState::InGame);
-
-    case GameState::InGame:
-      inGame();
-      break;
-
-    case GameState::FinalScore:
-      finalScoreDisplay();
-      break;
-      
-    } 
-  
-  arduboy.display();
+	arduboy.display();
 }
 
 void vsBoot()
@@ -509,38 +482,19 @@ void splashScreen()
 void inGame()
 {
 
-  Sprites::drawOverwrite(0, 0, scorecard, 0);
-  
-	/*for(uint8_t i = 0; i < 4; ++i)
+	Sprites::drawOverwrite(0, 0, scorecard, 0);
+
+	for(uint8_t i = 0; i < 4; ++i)
 	{
 		if (game.numberOfPlayers > i)
 		{
-			
-			font4x6.setCursor(1, GRID_PAR_Y + ((i + 1) * GRID_VERT_SPACING));
-			font4x6.print(game.name[i]);
+			const uint8_t j = i + 1;
+			font4x6.setCursor(1, GRID_PAR_Y + (j * GRID_VERT_SPACING));
+			font4x6.print(game.names[i]);
 		}
-	}*/
-
-  font4x6.setCursor(1, GRID_PAR_Y + (1 * GRID_VERT_SPACING));
-  font4x6.print(game.name1);
-
-  if (game.numberOfPlayers >= 2) 
-  {
-    font4x6.setCursor(1, GRID_PAR_Y + (2 * GRID_VERT_SPACING));
-    font4x6.print(game.name2);
-  }
-  if (game.numberOfPlayers >= 3) 
-  {
-    font4x6.setCursor(1, GRID_PAR_Y + (3 * GRID_VERT_SPACING));
-    font4x6.print(game.name3);
-  }
-  if (game.numberOfPlayers >= 4) 
-  {
-    font4x6.setCursor(1, GRID_PAR_Y + (4 * GRID_VERT_SPACING));
-    font4x6.print(game.name4);
-  }
+	}
   
-  //arduboy.drawHorizontalDottedLine(0, WIDTH, GRID_PAR_Y - 2, 2);
+	//arduboy.drawHorizontalDottedLine(0, WIDTH, GRID_PAR_Y - 2, 2);
   
 	for(uint8_t i = 0; i < 3; ++i)
 	{

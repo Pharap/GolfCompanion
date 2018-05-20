@@ -18,24 +18,15 @@
 #define EEPROM_TOTAL                  EEPROM_HOLES + 90
 #define EEPROM_NAMES                  EEPROM_TOTAL + 5
     
-struct Game
+class Game
 {
+public:
 	constexpr const static uint8_t letter1 = 'G';
 	constexpr const static uint8_t letter2 = 'C';
+	constexpr const static uint8_t nameLength = NAME_LENGTH;
+	constexpr const static uint8_t nameSize = nameLength + 1;
 
-public: 
-
-	Game()
-	{
-		for (uint8_t i = 0; i < NAME_LENGTH; ++i)
-		{
-			name1[i] = ' ';
-			name2[i] = ' ';
-			name3[i] = ' ';
-			name4[i] = ' ';
-		}
-	};
-
+public:
 	uint8_t numberOfPlayers = 1;
 	uint8_t playerBeingEdited = 1; 
 
@@ -47,22 +38,28 @@ public:
 	Hole holes[18];
 	Hole total;
 
-	char name1[NAME_LENGTH + 1];
-	char name2[NAME_LENGTH + 1];
-	char name3[NAME_LENGTH + 1];
-	char name4[NAME_LENGTH + 1];
+	char names[4][nameSize];
 
 private:
 
 	GameState _state = GameState::VSBoot;
 	uint8_t order[4] = { 1, 2, 3, 4 };
 
+public: 
+
+	Game(void)
+	{
+		for (uint8_t i = 0; i < 4; ++i)
+			for (uint8_t j = 0; j < nameLength; ++j)
+				names[i][j] = ' ';
+	}
+
 
 
 	//--------------------------------------------------------------------------------------------------------------------------
 	// Methods ..
 
-	public: 
+public: 
 
 	GameState getState() const
 	{
@@ -125,29 +122,12 @@ private:
 
 		uint8_t address = EEPROM_NAMES;
 
-		for (uint8_t i = 0; i < NAME_LENGTH + 1; ++i)
-		{
-			EEPROM.update(address, name1[i]);
-			++address;
-		}
-
-		for (uint8_t i = 0; i < NAME_LENGTH + 1; ++i)
-		{
-			EEPROM.update(address, name2[i]);
-			++address;
-		}
-
-		for (uint8_t i = 0; i < NAME_LENGTH + 1; ++i)
-		{
-			EEPROM.update(address, name3[i]);
-			++address;
-		}
-
-		for (uint8_t i = 0; i < NAME_LENGTH + 1; ++i)
-		{
-			EEPROM.update(address, name4[i]);
-			++address;
-		}
+		for (uint8_t i = 0; i < 4; ++i)
+			for (uint8_t j = 0; j < nameSize; ++j)
+			{
+				EEPROM.update(address, names[i][j]);
+				++address;
+			}
 	}
 
 	void loadEEPROM()
@@ -177,29 +157,12 @@ private:
 
 		uint8_t address = EEPROM_NAMES;
 
-		for (uint8_t i = 0; i < NAME_LENGTH + 1; ++i)
-		{
-			name1[i] = EEPROM.read(address);
-			++address;
-		}
-
-		for (uint8_t i = 0; i < NAME_LENGTH + 1; ++i)
-		{
-			name2[i] = EEPROM.read(address);
-			++address;
-		}
-
-		for (uint8_t i = 0; i < NAME_LENGTH + 1; ++i)
-		{
-			name3[i] = EEPROM.read(address);
-			++address;
-		}
-
-		for (uint8_t i = 0; i < NAME_LENGTH + 1; ++i)
-		{
-			name4[i] = EEPROM.read(address);
-			++address;
-		}
+		for (uint8_t i = 0; i < 4; ++i)
+			for (uint8_t j = 0; j < nameSize; ++j)
+			{
+				names[i][j] = EEPROM.read(address);
+				++address;
+			}
 	}
 
 	void clear(bool reset)
@@ -219,13 +182,9 @@ private:
 			numberOfPlayers = 1;
 			playerBeingEdited = 1; 
 
-			for (uint8_t i = 0; i < NAME_LENGTH; ++i)
-			{
-				name1[i] = ' ';
-				name2[i] = ' ';
-				name3[i] = ' ';
-				name4[i] = ' ';
-			}
+			for (uint8_t i = 0; i < 4; ++i)
+				for (uint8_t j = 0; j < nameLength; ++j)
+					names[i][j] = ' ';
 
 			total = Hole(72);
 		}
@@ -260,14 +219,7 @@ private:
 
 	char * getName(uint8_t index)
 	{
-		switch (index)
-		{
-			case 0:   return name1;
-			case 1:   return name2;
-			case 2:   return name3;
-			case 3:   return name4;
-			default:  return nullptr;
-		}
+		return (index < 4) ? (&names[4][0]) : nullptr;
 	}
 
 	void determineWinners()
